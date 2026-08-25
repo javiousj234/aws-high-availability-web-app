@@ -170,3 +170,24 @@ During testing, some resources initially appeared unhealthy or incorrectly confi
 
 This reinforced the importance of checking resource states, logs, metrics, and deployment progress before immediately modifying configurations. Allowing AWS services time to reach their expected state helped distinguish actual configuration failures from normal deployment delays.
 ## Key Takeaways
+## Key Takeaways
+
+This project helped me move beyond understanding individual AWS services and develop a better understanding of how they work together as part of a complete architecture.
+
+- **Networking fundamentals:** I gained hands-on experience designing a VPC, subnetting across Availability Zones, configuring route tables, and understanding the different roles of Internet Gateways and NAT Gateways.
+
+- **Traffic flow and security:** I developed a stronger understanding of how traffic moves through an AWS environment and how security group referencing can restrict communication between the ALB, application, and database tiers.
+
+- **High availability and self-healing:** I learned how Application Load Balancers, health checks, Auto Scaling Groups, Launch Templates, and multiple Availability Zones work together to maintain application availability when individual instances fail.
+
+- **Automated instance configuration:** Using Launch Templates and User Data demonstrated how EC2 instances can be automatically configured and deployed without manually rebuilding each server.
+
+- **IAM and secrets management:** I learned how EC2 IAM roles and AWS Secrets Manager allow applications to securely access sensitive information without hardcoding credentials.
+
+- **Application infrastructure:** Building the Nginx → Flask → PostgreSQL request path helped me understand how infrastructure and application components interact rather than viewing AWS services as isolated resources.
+
+- **Monitoring and observability:** CloudWatch and SNS demonstrated the difference between automatically recovering from a failure and maintaining visibility into when and why failures occur.
+
+- **Troubleshooting methodology:** One of my biggest takeaways was learning not to immediately assume that a resource is incorrectly configured when it does not respond as expected. AWS operations such as instance bootstrapping, target health checks, Auto Scaling replacement, and CloudWatch alarm evaluation can take time. I learned to verify logs, metrics, resource states, networking, and IAM permissions before making additional configuration changes.
+
+Overall, this project strengthened my ability to design, deploy, troubleshoot, and explain a multi-tier AWS environment rather than simply configuring individual AWS services independently.
