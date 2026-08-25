@@ -117,6 +117,15 @@ This bootstrapping process allows the Auto Scaling Group to launch replacement i
 The IAM role defined through the Launch Template also allows newly launched instances to retrieve the required database credentials from AWS Secrets Manager at runtime.
 ## Testing and Validation
 
+The architecture was tested by intentionally introducing failures and confirming that the environment recovered as expected.
+
+- EC2 instances were manually terminated to verify that the Auto Scaling Group automatically launched replacement instances and restored the desired capacity.
+- Application instances were taken out of service to confirm that the Application Load Balancer stopped routing traffic to unhealthy targets and continued serving requests through healthy instances in the other Availability Zone.
+- RDS connectivity was validated through the Flask application by successfully retrieving and displaying PostgreSQL data on the website.
+- Secrets Manager integration was validated by confirming that EC2 instances could retrieve database credentials through the attached IAM role rather than using hardcoded credentials.
+- CloudWatch and SNS were tested by intentionally creating unhealthy application targets and verifying that alarm notifications were delivered.
+
+These tests confirmed that the application could continue operating during individual instance failures while automated recovery mechanisms restored capacity.
 ## Challenges and Troubleshooting
 
 ## Key Takeaways
