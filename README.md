@@ -170,7 +170,6 @@ During testing, some resources initially appeared unhealthy or incorrectly confi
 
 This reinforced the importance of checking resource states, logs, metrics, and deployment progress before immediately modifying configurations. Allowing AWS services time to reach their expected state helped distinguish actual configuration failures from normal deployment delays.
 ## Key Takeaways
-## Key Takeaways
 
 This project helped me move beyond understanding individual AWS services and develop a better understanding of how they work together as part of a complete architecture.
 
