@@ -108,6 +108,13 @@ For example, if an application instance becomes unhealthy, the Application Load 
 This monitoring layer provides both automated recovery and operational visibility into the environment.
 ## Automated EC2 Bootstrapping
 
+EC2 instances are deployed through an Auto Scaling Group using a custom Launch Template. The Launch Template defines the configuration required for replacement and additional instances, including the AMI, instance type, security group, IAM instance profile, and User Data bootstrap script.
+
+When a new instance launches, User Data automatically installs and configures the required application components, including Nginx, Python dependencies, and the Flask application. It also configures the application as a systemd service so that Flask starts automatically and can restart without requiring manual intervention.
+
+This bootstrapping process allows the Auto Scaling Group to launch replacement instances with a consistent configuration. Rather than manually configuring each new EC2 instance, the infrastructure can automatically restore application capacity when an instance is replaced.
+
+The IAM role defined through the Launch Template also allows newly launched instances to retrieve the required database credentials from AWS Secrets Manager at runtime.
 ## Testing and Validation
 
 ## Challenges and Troubleshooting
