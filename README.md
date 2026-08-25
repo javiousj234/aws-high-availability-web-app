@@ -76,7 +76,17 @@ The response then travels back through Nginx and the Application Load Balancer t
 8. Flask generates the HTML response.
 9. Nginx returns the response through the ALB to the client.
 ## High Availability and Auto Scaling
+## High Availability and Auto Scaling
 
+The application tier is deployed across two Availability Zones to improve fault tolerance and availability. The Application Load Balancer distributes traffic across healthy EC2 instances in both Availability Zones.
+
+If an EC2 instance becomes unhealthy, the ALB stops routing traffic to that target and continues sending requests to the remaining healthy instances. This allows the application to remain available while the failed capacity is being replaced.
+
+The EC2 instances are managed by an Auto Scaling Group using a custom Launch Template. The ASG maintains the configured desired capacity and automatically launches replacement instances when unhealthy instances are terminated.
+
+When scaling policies are configured, the ASG can also increase or decrease the number of EC2 instances based on workload demand while staying within the configured minimum and maximum capacity limits.
+
+New instances are automatically bootstrapped through Launch Template User Data, allowing replacement capacity to install and configure the application without manual intervention.
 ## Database Architecture
 
 ## Monitoring and Alerting
