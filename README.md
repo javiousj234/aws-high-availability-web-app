@@ -16,7 +16,7 @@ Database credentials are stored in AWS Secrets Manager rather than being hardcod
 
 Amazon CloudWatch provides monitoring for the environment, with alarms configured for unhealthy application targets and high CPU utilization across key resources. Amazon SNS delivers notifications when alarm conditions are reached. This complements the architecture's automated recovery mechanisms by providing visibility into infrastructure and application health even when the ASG is able to replace unhealthy instances automatically.
 ## Architecture
-
+![AWS Architecture Diagram](three-tier-architecture-diagram.png)
 ## AWS Services Used
 
 ## Network Design
