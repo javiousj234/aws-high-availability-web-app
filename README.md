@@ -43,6 +43,15 @@ Public subnet route tables contain a default route (`0.0.0.0/0`) to the Internet
 Resources are distributed across two Availability Zones to improve availability and fault tolerance. If an application instance or Availability Zone becomes unavailable, the Application Load Balancer can continue directing traffic to healthy application instances in the remaining Availability Zone while the Auto Scaling Group maintains the desired application capacity.
 ## Security Design
 
+Security groups are used to restrict communication between each tier of the architecture following a least privilege approach.
+
+The Application Load Balancer security group allows inbound HTTP traffic on port 80 from the public internet. The ALB acts as the public entry point for the application, while its listener and target group route requests to healthy application instances.
+
+The EC2 application security group allows inbound HTTP traffic on port 80 only from the ALB security group. This prevents the application instances from directly accepting HTTP traffic from the public internet while still allowing the ALB to communicate with them.
+
+The RDS security group allows inbound PostgreSQL traffic on port 5432 only from the EC2 application security group. This restricts database connectivity to the application tier rather than exposing the database directly to external clients.
+
+Database credentials are stored in AWS Secrets Manager rather than being hardcoded into the application or User Data. EC2 instances use an IAM role with permission to retrieve the required secret at runtime, allowing the Flask application to authenticate to PostgreSQL without storing long-lived credentials directly in the application configuration.
 ## Application Architecture
 
 ## High Availability and Auto Scaling
