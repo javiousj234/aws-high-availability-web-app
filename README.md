@@ -18,7 +18,20 @@ Amazon CloudWatch provides monitoring for the environment, with alarms configure
 ## Architecture
 ![AWS Architecture Diagram](three-tier-architecture-diagram.png)
 ## AWS Services Used
-
+| Service | Purpose |
+|---|---|
+| Amazon VPC | Provides the isolated network environment for the architecture |
+| Amazon EC2 | Hosts the Nginx web server and Flask application |
+| Application Load Balancer (ALB) | Distributes incoming HTTP traffic across healthy EC2 instances |
+| EC2 Auto Scaling | Maintains application capacity and replaces unhealthy instances |
+| Launch Templates | Defines the configuration used to launch EC2 instances |
+| Amazon RDS for PostgreSQL | Provides the managed relational database for the application |
+| AWS Secrets Manager | Stores database credentials securely for runtime retrieval |
+| AWS IAM | Allows EC2 instances to retrieve database credentials without hardcoded AWS credentials |
+| NAT Gateway | Provides outbound internet access for EC2 instances in private subnets |
+| Internet Gateway | Provides internet connectivity for resources in public subnets |
+| Amazon CloudWatch | Monitors infrastructure health and resource utilization |
+| Amazon SNS | Sends notifications when CloudWatch alarms enter an alarm state |
 ## Network Design
 
 ## Security Design
