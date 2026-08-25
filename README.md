@@ -54,6 +54,27 @@ The RDS security group allows inbound PostgreSQL traffic on port 5432 only from 
 Database credentials are stored in AWS Secrets Manager rather than being hardcoded into the application or User Data. EC2 instances use an IAM role with permission to retrieve the required secret at runtime, allowing the Flask application to authenticate to PostgreSQL without storing long-lived credentials directly in the application configuration.
 ## Application Architecture
 
+Incoming HTTP requests first reach the internet facing Application Load Balancer, which forwards traffic to healthy EC2 instances in the Auto Scaling Group.
+
+Each EC2 instance runs Nginx on port 80. Nginx acts as a reverse proxy, forwarding incoming requests to the Flask application running locally on port 8080.
+
+The Flask application contains the application logic. When the root route (`/`) is requested, the application uses the AWS SDK for Python (`boto3`) to retrieve the database credentials from AWS Secrets Manager. The EC2 instance authenticates to AWS using its attached IAM role, so AWS credentials are stored on the instance.
+
+After retrieving the database credentials, the Flask application uses a PostgreSQL client library to connect to the Amazon RDS PostgreSQL database over port 5432. The application runs a SQL query against the `users` table, retrieves the results, and generates an HTML response containing the database backed content.
+
+The response then travels back through Nginx and the Application Load Balancer to the user.
+
+### Request Flow
+
+1. Client sends an HTTP request to the ALB.
+2. The ALB forwards the request to a healthy EC2 target.
+3. Nginx receives the request on port 80.
+4. Nginx reverse proxies the request to Flask on `127.0.0.1:8080`.
+5. Flask uses `boto3` and the EC2 IAM role to retrieve database credentials from Secrets Manager.
+6. Flask connects to PostgreSQL on Amazon RDS over TCP port 5432.
+7. PostgreSQL executes the requested SQL query and returns the data.
+8. Flask generates the HTML response.
+9. Nginx returns the response through the ALB to the client.
 ## High Availability and Auto Scaling
 
 ## Database Architecture
