@@ -128,4 +128,45 @@ The architecture was tested by intentionally introducing failures and confirming
 These tests confirmed that the application could continue operating during individual instance failures while automated recovery mechanisms restored capacity.
 ## Challenges and Troubleshooting
 
+Several configuration and deployment issues occurred while building the architecture. Troubleshooting these failures provided practical experience identifying problems across networking, IAM, load balancing, application deployment, and Auto Scaling.
+
+### Application Load Balancer Security Group
+
+The Application Load Balancer initially experienced connectivity issues because the correct ALB security group was not attached. This prevented the expected traffic flow between the load balancer and application instances.
+
+I resolved the issue by verifying the ALB security group configuration and ensuring that the EC2 application security group allowed inbound HTTP traffic from the ALB security group.
+
+### NAT Gateway and Private Subnet Connectivity
+
+EC2 instances deployed into private subnets initially experienced outbound connectivity problems. Troubleshooting the route tables and NAT configuration revealed issues with the NAT Gateway configuration, including its Elastic IP association.
+
+I corrected the NAT Gateway configuration and verified that the private route table directed `0.0.0.0/0` traffic to the NAT Gateway. This restored outbound internet connectivity for private application instances without making them publicly accessible.
+
+### RDS Connectivity
+
+Initial attempts to connect the application tier to PostgreSQL RDS resulted in connection timeouts. DNS resolution of the RDS endpoint worked successfully, which helped isolate the problem to network access rather than name resolution.
+
+The RDS security group was updated to allow PostgreSQL traffic on TCP port 5432 from the EC2 application security group. Connectivity was then validated from an EC2 instance before testing database access through the Flask application.
+
+### Launch Template IAM Role
+
+One of the most significant deployment issues occurred after creating a new Launch Template version. The new version was unintentionally based on an older template version that did not include the required EC2 IAM instance profile.
+
+As a result, the Auto Scaling Group successfully launched new instances and the application was deployed, but the Flask application could not retrieve database credentials from AWS Secrets Manager. Application logs revealed AWS credential-related errors.
+
+After comparing the Launch Template configurations, I identified the missing IAM role, created a corrected Launch Template version, and rolled out new instances. The replacement instances were then able to retrieve the database secret successfully.
+
+This demonstrated the importance of validating the complete configuration of a new Launch Template version rather than assuming settings from another version will automatically be preserved.
+
+### Flask and systemd Port Conflict
+
+While configuring the Flask application as a systemd service, the service repeatedly failed with an `Address already in use` error because another manually started Flask process was already using port 8080.
+
+Using systemd logs and process/network troubleshooting commands helped identify the port conflict. After eliminating the conflicting process, the application could be managed automatically through systemd instead of requiring Flask to be started manually.
+
+### Deployment and Monitoring Delays
+
+During testing, some resources initially appeared unhealthy or incorrectly configured while AWS was still completing deployment, health checks, target registration, Auto Scaling replacement, or CloudWatch alarm evaluation.
+
+This reinforced the importance of checking resource states, logs, metrics, and deployment progress before immediately modifying configurations. Allowing AWS services time to reach their expected state helped distinguish actual configuration failures from normal deployment delays.
 ## Key Takeaways
