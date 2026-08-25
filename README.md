@@ -99,6 +99,13 @@ The Flask application connects to RDS using the database endpoint rather than a 
 When a request requires database information, Flask retrieves the credentials, establishes a connection to PostgreSQL, executes the SQL query, and uses the returned data to generate the application's response.
 ## Monitoring and Alerting
 
+Amazon CloudWatch is used to monitor the health and performance of the application infrastructure. CloudWatch alarms were configured to detect unhealthy ALB targets and elevated CPU utilization across key compute and database resources.
+
+Amazon SNS is integrated with the CloudWatch alarms to send email notifications when an alarm enters the `ALARM` state. This provides visibility into infrastructure problems even when automated recovery mechanisms are able to resolve them without manual intervention.
+
+For example, if an application instance becomes unhealthy, the Application Load Balancer removes it from active traffic and the Auto Scaling Group can replace the failed capacity. CloudWatch and SNS ensure that the failure is still reported rather than being silently corrected by the self-healing architecture.
+
+This monitoring layer provides both automated recovery and operational visibility into the environment.
 ## Automated EC2 Bootstrapping
 
 ## Testing and Validation
