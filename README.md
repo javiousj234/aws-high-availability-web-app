@@ -89,6 +89,15 @@ When scaling policies are configured, the ASG can also increase or decrease the 
 New instances are automatically bootstrapped through Launch Template User Data, allowing replacement capacity to install and configure the application without manual intervention.
 ## Database Architecture
 
+The application uses Amazon RDS for PostgreSQL as its relational database. RDS is deployed within dedicated private database subnets and is not publicly accessible, preventing direct database connections from the public internet.
+
+A DB subnet group containing private database subnets across two Availability Zones provides RDS with eligible network locations for database deployment and supports AWS availability features that require multi-AZ subnet coverage.
+
+Database access is restricted through the RDS security group. Inbound PostgreSQL traffic on TCP port 5432 is permitted only from the EC2 application security group. This allows the Flask application to communicate with the database while preventing direct access from the ALB or public internet.
+
+The Flask application connects to RDS using the database endpoint rather than a fixed IP address. Database credentials are stored in AWS Secrets Manager and retrieved at runtime using `boto3`. The EC2 instances use an attached IAM role with permission to retrieve the required secret, eliminating the need to hardcode database credentials into the application or User Data.
+
+When a request requires database information, Flask retrieves the credentials, establishes a connection to PostgreSQL, executes the SQL query, and uses the returned data to generate the application's response.
 ## Monitoring and Alerting
 
 ## Automated EC2 Bootstrapping
