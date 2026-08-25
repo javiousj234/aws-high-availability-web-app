@@ -76,7 +76,6 @@ The response then travels back through Nginx and the Application Load Balancer t
 8. Flask generates the HTML response.
 9. Nginx returns the response through the ALB to the client.
 ## High Availability and Auto Scaling
-## High Availability and Auto Scaling
 
 The application tier is deployed across two Availability Zones to improve fault tolerance and availability. The Application Load Balancer distributes traffic across healthy EC2 instances in both Availability Zones.
 
