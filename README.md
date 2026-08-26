@@ -58,7 +58,7 @@ Incoming HTTP requests first reach the internet facing Application Load Balancer
 
 Each EC2 instance runs Nginx on port 80. Nginx acts as a reverse proxy, forwarding incoming requests to the Flask application running locally on port 8080.
 
-The Flask application contains the application logic. When the root route (`/`) is requested, the application uses the AWS SDK for Python (`boto3`) to retrieve the database credentials from AWS Secrets Manager. The EC2 instance authenticates to AWS using its attached IAM role, so AWS credentials are stored on the instance.
+The Flask application contains the application logic. When the root route (`/`) is requested, the application uses the AWS SDK for Python (`boto3`) to retrieve the database credentials from AWS Secrets Manager. The EC2 instance authenticates to AWS using its attached IAM role, so long-lived AWS credentials do not need to be stored on the instance.
 
 After retrieving the database credentials, the Flask application uses a PostgreSQL client library to connect to the Amazon RDS PostgreSQL database over port 5432. The application runs a SQL query against the `users` table, retrieves the results, and generates an HTML response containing the database backed content.
 
@@ -126,6 +126,22 @@ The architecture was tested by intentionally introducing failures and confirming
 - CloudWatch and SNS were tested by intentionally creating unhealthy application targets and verifying that alarm notifications were delivered.
 
 These tests confirmed that the application could continue operating during individual instance failures while automated recovery mechanisms restored capacity.
+### Deployment Evidence
+
+#### Database-Backed Application
+![Running Application](screenshots/Application_Webpage.png)
+
+#### Application Load Balancer
+![Healthy ALB Targets](screenshots/ALB.png)
+
+#### Auto Scaling Group
+![Auto Scaling Group](screenshots/ASG.png)
+
+#### PostgreSQL RDS
+![Amazon RDS PostgreSQL](screenshots/RDS.png)
+
+#### CloudWatch Monitoring
+![CloudWatch Alarms](screenshots/Cloud_Watch.png)
 ## Challenges and Troubleshooting
 
 Several configuration and deployment issues occurred while building the architecture. Troubleshooting these failures provided practical experience identifying problems across networking, IAM, load balancing, application deployment, and Auto Scaling.
